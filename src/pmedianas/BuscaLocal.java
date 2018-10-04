@@ -26,36 +26,32 @@ public class BuscaLocal {
         this.solucao =  new int [facilidades];
                 
         gerar_solucao_inicial_aleatoria();
-                
-        for (int i=0;i<this.qtde;i++){
-            System.out.print(""+this.rota[i]+"-");
-        }
+               
+        //Mostrando a solucao inicial
         
-        System.out.println("\nCusto Total = " + custo_rota(this.rota));
-        System.arraycopy(this.rota, 0, this.rotinha, 0, qtde);
+        for (int i=0; i<this.facilidades; i++){
+            System.out.print(this.solucao[i]+"-");        }
+        
         //Melhorando o trajeto do caxeiro viajente
         AllPairs();
         
-         for (int i=0;i<this.qtde;i++){
-            System.out.print(""+this.rota[i]+"-");
-         }
-         System.out.println("\nCusto Total = " + custo_rota(this.rota));
-         
-         
-         
-    }
+           }
 
  
-    
+
     
     
     private void AllPairs(){
-        int aux_rota[] = new int [this.qtde], troca;
+        int fu[] = new int [this.facilidades], troca; //Facilidades Usada
+        int fnu[] = new int [this.pontos_demanda-this.facilidades]; //Facilidades Nao Usada
+        
+        
         double distancia_total, aux_distancia_total;
+        boolean melhorou=true;
         
         //Primeiro copia-se a rota inicial gerada aleatoriamente
-        System.arraycopy(this.rota,0, aux_rota,0,this.qtde);
-        distancia_total=custo_rota(this.rota);
+        System.arraycopy(this.solucao,0, fu,0,this.facilidades);
+        distancia_total=custo_solucao(this.facilidades);
         boolean melhorou=true;
         
         
@@ -95,7 +91,7 @@ public class BuscaLocal {
     }
     
     
-    private double custo_rota(int[] rota_testada){
+    private double custo_solucao(int[] rota_testada){
         double custo =0.0;
         int i, de , para;
         
@@ -113,27 +109,28 @@ public class BuscaLocal {
                 
     }
     
+
     
     private void gerar_solucao_inicial_aleatoria(){
         //Esvaziando o vetor
-        for (int i=0;i<this.qtde;i++){
-            this.rota[i]=-1;
+        for (int i=0;i<this.facilidades;i++){
+            this.solucao[i]=-1; //zero é um numero valido.. o -1 e para ir antes do zero.
         }
         
         Random r = new Random();
         int aux=0, i=0;
-        while (i<this.qtde){
-            aux=r.nextInt(this.qtde);
-            if (!existe(aux)){
-                this.rota[i]=aux;
+        while (i<this.facilidades){
+            aux=r.nextInt(this.pontos_demanda);
+            if (!existe(aux)){ //existe se o ponto ja não foi chamado
+                this.solucao[i]=aux;
                 i++;
             }
         }
     }
-    private boolean existe(int cidade){
+    private boolean existe(int ponto){
         boolean retorno=false;
-        for (int i=0;i<this.qtde;i++){
-            if (cidade==this.rota[i]){
+        for (int i=0;i<this.facilidades;i++){
+            if (ponto==this.solucao[i]){
                 retorno=true;
                 break;
             }

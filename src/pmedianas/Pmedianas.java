@@ -22,6 +22,9 @@ public class Pmedianas {
        pto.setSize(largura,altura);
        pto.setLocationRelativeTo(null);
        pto.setVisible(true);
+       
+       
+       BuscaLocal bl = new BuscaLocal(p.getDistancias(), pontos_demanda, facilidades);
     }
     
 }
