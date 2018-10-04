@@ -15,8 +15,10 @@ import java.util.Random;
 public class BuscaLocal {
     private int[] solucao;
     private double [][]distancias;
+    private int atendido_por; //Este vetor informa qual a facilidade (UPA) que esta mais proxima do bairro
     private int pontos_demanda;
     private int facilidades;
+    
        
 
     public BuscaLocal(double[][] distancias, int pontos_demanda, int facilidades) {
@@ -24,7 +26,9 @@ public class BuscaLocal {
         this.pontos_demanda = pontos_demanda;
         this.facilidades = facilidades;
         this.solucao =  new int [facilidades];
-                
+        this.atendido_por = new int[pontos_demanda];        
+       
+        
         gerar_solucao_inicial_aleatoria();
                
         //Mostrando a solucao inicial
@@ -37,23 +41,35 @@ public class BuscaLocal {
         
            }
 
- 
+    private void atendido_por_quem(int [] vet){
+        //Vet corresponde a um vetor que contém as facilidades que estão sendo usadas em um dado momento
+        
+        
+    }
 
     
     
     private void AllPairs(){
         int fu[] = new int [this.facilidades], troca; //Facilidades Usada
         int fnu[] = new int [this.pontos_demanda-this.facilidades]; //Facilidades Nao Usada
-        
-        
+                
         double distancia_total, aux_distancia_total;
         boolean melhorou=true;
         
-        //Primeiro copia-se a rota inicial gerada aleatoriamente
+        //Primeiro copia-se a solucao inicial gerada aleatoriamente
         System.arraycopy(this.solucao,0, fu,0,this.facilidades);
-        distancia_total=custo_solucao(this.facilidades);
-        boolean melhorou=true;
         
+        //Preenchendo o vetor facilidades nao usadas
+        int k=0, i=0;
+        for(k=0;k<this.pontos_demanda;k++){
+            if(!existe(k)){
+                fnu[i]=k;
+                i++;
+            }
+        }
+        
+        distancia_total=custo_solucao(this.solucao);
+        aux_distancia_total=distancia_total;
         
         //Iniciando a busca App Pairs
         while(melhorou) {
