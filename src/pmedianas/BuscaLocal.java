@@ -36,8 +36,15 @@ public class BuscaLocal {
             System.out.print(this.solucao[i]+"-");
         }
         
-        //Melhorando o trajeto do caixeiro viajante
+        //Melhorando a solução
         AllPairs();
+        
+        //Mostrando a solução Melhorada
+        System.out.println();
+        for (int i=0;i<this.facilidades;i++){
+            System.out.print(this.solucao[i]+"-");
+        }
+       
         
     }
     
@@ -78,8 +85,8 @@ public class BuscaLocal {
     private void AllPairs(){
         int fu[] = new int[this.facilidades], troca; //Facilidades Usadas
         int fnu[]= new int[this.pontos_demanda-this.facilidades]; //Facilidades não usadas
-        
-        double total_distancia, aux_total_distancia;
+        int aux_fnu[]= new int[this.pontos_demanda-this.facilidades];
+        double menor_distancia, distancia_testada;
         boolean melhorou=true;
         
         //Primeiro copia-se solucao inicial gerada aleatoriamente
@@ -95,58 +102,52 @@ public class BuscaLocal {
         }
         
         //Calculando o custo da soluçao total
-        total_distancia=distancia_total();
-         aux_total_distancia=total_distancia;
+        menor_distancia=distancia_total();
+         distancia_testada=menor_distancia;
         
         //Iniciando a busca all pairs
         while (melhorou){
             melhorou=false;
-            for (int i=0;i<this.qtde-1;i++){
-                for (int j=i+1;j<this.qtde;j++){
-                    troca=aux_rota[i];
-                    aux_rota[i]=aux_rota[j];
-                    aux_rota[j]=troca;
+            for (i=0;i<this.facilidades;i++){
+                for (int j=i+1;j<this.pontos_demanda-this.facilidades;j++){
+                    troca=fu[i];
+                    fu[i]=fnu[j];
+                    fnu[j]=troca;
 
-                    //Verificando o custo da nova rota
-                    aux_distancia_total=custo_rota(aux_rota);
+                    //Apos a troca verifica quem atende os pontos de demanda
+                    atendido_por_quem(fu);
+                    
+                    //Calcula agora o custo desta nova configuração
+                    distancia_testada=distancia_total();
 
                     //Melhorou?
-                    if (aux_distancia_total<distancia_total){
+                    if (distancia_testada<menor_distancia){
+                       //Este custo ficouo melhor. Copitando esta configuracao
                         melhorou=true;
-                        distancia_total=aux_distancia_total;
+                        menor_distancia=distancia_testada;
 
-                        //Atualizando a rota que foi melhorada
-                        System.arraycopy(aux_rota, 0, this.rota, 0, this.qtde);
+                        //Gravar qual e a melhor solução
+                        System.arraycopy(fu, 0, this.solucao, 0, this.facilidades);
+                        System.arraycopy(fnu, 0, aux_fnu, 0, this.pontos_demanda-this.facilidades);
                     }
-                    //Voltando com a configuração original para testar as outras
-                    //Combinações
-                    troca=aux_rota[j];
-                    aux_rota[j]=aux_rota[i];
-                    aux_rota[i]=troca;
+                    
+                    //Desfazendo a troca feita para testar outra facilidade
+                    troca=fnu[j];
+                    fnu[j]=fu[i];
+                    fu[i]=troca;
+                                        
                 }//Neste local encerram-se os ciclos de troca
 
                 //Atualizando com a melhor rota
-                System.arraycopy(this.rota, 0, aux_rota, 0, this.qtde);
+                //Quando termina de percorrer todas as facilidades é hora de guardar a melhor de todas
+                System.arraycopy(this.solucao, 0, fu, 0, this.facilidades);
+                System.arraycopy(aux_fnu, 0, fnu, 0, this.pontos_demanda-this.facilidades);
             }
         }
     }
     
     
-    private double custo_solucao(int[] rota_testada){
-        double custo=0.0;
-        int i,de, para;
-        for (i=0;i<this.qtde-1;i++){
-            de=rota_testada[i];
-            para=rota_testada[i+1];
-            
-            custo+=this.distancias[de][para];
-        }
-        //Voltando para a cidade de origem
-        custo+=this.distancias[i][0];
-        return custo;
-    }
-    
-    private void gerar_solucao_inicial_aleatoria(){
+      private void gerar_solucao_inicial_aleatoria(){
         //Esvaziando o vetor
         for (int i=0;i<this.facilidades;i++){
             this.solucao[i]=-1;

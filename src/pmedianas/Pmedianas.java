@@ -18,7 +18,7 @@ public class Pmedianas {
      */
     public static void main(String[] args) {
         int largura=1200, altura=700, pontos_demanda=500;
-        int facilidades=15;
+        int facilidades=3;
         
         //Gerando os pontos de demanda na tela.
         //As facilidades poderão ser instaladas em qualquer ponto de demanda
